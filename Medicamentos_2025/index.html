@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Avançado - Análise de Medicamentos Unimed</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles_avancado.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-pills"></i> Dashboard Avançado - Medicamentos Unimed CNU</h1>
+            <p>Análise Médica Estratégica | Dados Filtrados por Especialistas | Últimos 12 Meses</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Métricas Principais com Insights Médicos -->
+        <section class="section">
+            <h2 class="section-title">Sumário Executivo Médico</h2>
+            <div class="row" id="metricas-principais">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Carregando métricas médicas...
+                </div>
+            </div>
+            
+            <!-- Insight Médico Box -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="insight-box medical-insight">
+                        <h5><i class="fas fa-user-md"></i> Insights Médicos Estratégicos</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="insight-item">
+                                    <strong>🎯 Dominância Oncológica:</strong> IV representa 57,5% do valor total, com KEYTRUDA (PEMBROLIZUMABE) liderando com R$ 104,9 milhões
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="insight-item">
+                                    <strong>💊 Concentração Terapêutica:</strong> Apenas 46 princípios ativos (21,6%) geram 80% do valor - oportunidade para negociação focada
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="insight-item">
+                                    <strong>⚠️ Outlier Crítico:</strong> SPINRAZA (NUSINERSENA) com valor unitário extremo de R$ 425.062,90 - necessita análise específica
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análise por Via de Administração -->
+        <section class="section">
+            <h2 class="section-title">Análise por Via de Administração</h2>
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-syringe"></i> Distribuição por Via de Administração</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-via-administracao" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Métricas por Via</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="metricas-via-administracao"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Drogas Destaque por Via -->
+        <section class="section">
+            <h2 class="section-title">Drogas Destaque por Via de Administração</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-star"></i> Medicamentos Líderes por Via</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-drogas-destaque" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 15 por Valor Aprovado -->
+        <section class="section">
+            <h2 class="section-title">Top 15 Princípios Ativos por Valor Aprovado</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-trophy"></i> Ranking Médico - Maiores Custos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-top-15-valor" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 15 por Quantidade -->
+        <section class="section">
+            <h2 class="section-title">Top 15 Princípios Ativos por Quantidade</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> Ranking Médico - Medicamentos Cotidianos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-top-15-quantidade" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 15 por Taxa de Glosa -->
+        <section class="section">
+            <h2 class="section-title">Top 15 Princípios Ativos por Taxa de Glosa</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Ranking Médico - Medicamentos Mais Glosados</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-top-15-glosa" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análise de Outliers -->
+        <section class="section">
+            <h2 class="section-title">Análise de Outliers e Medicamentos de Alto Custo</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-warning"></i> Medicamentos com Valor Unitário Extremo</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-outliers" class="chart-container-large"></div>
+                            <div class="alert alert-warning mt-3">
+                                <h5><i class="fas fa-info-circle"></i> SPINRAZA (NUSINERSENA) - Caso Especial</h5>
+                                <p><strong>Valor Unitário:</strong> R$ 425.062,90 | <strong>Z-Score:</strong> 471,67 | <strong>Finalidade:</strong> AME (Atrofia Muscular Espinhal)</p>
+                                <p>Medicamento de ultra-alto custo que requer análise específica de protocolo e critérios de aprovação.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparativo Valor Unitário por Via -->
+        <section class="section">
+            <h2 class="section-title">Comparativo de Valor Unitário por Via</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-balance-scale"></i> Análise de Eficiência de Custos</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-valor-unitario" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análise de Glosa Detalhada -->
+        <section class="section">
+            <h2 class="section-title">Análise Detalhada de Glosas</h2>
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Distribuição de Glosas por Via</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-glosa-por-via" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-percentage"></i> Taxa de Glosa por Via</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-taxa-glosa" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recomendações Médicas Estratégicas -->
+        <section class="section">
+            <h2 class="section-title">Recomendações Médicas Estratégicas</h2>
+            <div class="row">
+                <div class="col-12 col-md-4">
+                    <div class="card recommendation-card">
+                        <div class="card-header bg-primary">
+                            <h3><i class="fas fa-handshake"></i> Negociação Estratégica</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Foco IV:</strong> 57,5% do valor - negociação prioritária</li>
+                                <li><strong>Top 46 princípios:</strong> Concentração de 80% do valor</li>
+                                <li><strong>Medicamentos cotidianos:</strong> Volume alto, margem para negociação</li>
+                                <li><strong>Outliers críticos:</strong> Protocolos específicos necessários</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card recommendation-card">
+                        <div class="card-header bg-warning">
+                            <h3><i class="fas fa-clipboard-check"></i> Gestão de Protocolos</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Alta glosa:</strong> CARMUSTINA (94,7%) - revisão urgente</li>
+                                <li><strong>Protocolos específicos:</strong> Para medicamentos >R$ 50.000</li>
+                                <li><strong>Via SC:</strong> Maior valor unitário - critérios rigorosos</li>
+                                <li><strong>Monitoramento contínuo:</strong> Top 15 de cada categoria</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card recommendation-card">
+                        <div class="card-header bg-info">
+                            <h3><i class="fas fa-user-md"></i> Análise Médica</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Oncologia:</strong> Dominância clara - protocolos especializados</li>
+                                <li><strong>Alternativas terapêuticas:</strong> Para medicamentos de ultra-alto custo</li>
+                                <li><strong>Eficiência de custos:</strong> Análise por via de administração</li>
+                                <li><strong>Auditoria médica:</strong> Foco nos outliers e altas glosas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--unimed-green-dark); color: var(--unimed-white); padding: 30px 0; margin-top: 50px; text-align: center;">
+        <div class="container">
+            <p>&copy; 2025 Unimed CNU - Dashboard Médico Avançado</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 10px;">
+                Análise baseada em dados médicos filtrados por especialistas
+            </p>
+        </div>
+    </footer>
+
+    <script src="dashboard_avancado.js"></script>
+</body>
+</html>
