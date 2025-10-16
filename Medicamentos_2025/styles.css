@@ -417,3 +417,203 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--unimed-green-dark);
 }
+
+/* Navegação por Abas */
+.tab-navigation {
+    margin-bottom: 2rem;
+    border-bottom: 3px solid var(--primary-green);
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 0;
+    background: var(--unimed-gray-light);
+    border-radius: 10px 10px 0 0;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.tab-button {
+    flex: 1;
+    min-width: 200px;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px 10px 0 0;
+    color: var(--unimed-gray);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.tab-button:hover {
+    background: rgba(0, 153, 93, 0.1);
+    color: var(--primary-green);
+}
+
+.tab-button.active {
+    background: var(--primary-green);
+    color: white;
+    box-shadow: 0 -2px 10px rgba(0, 153, 93, 0.3);
+}
+
+.tab-button i {
+    font-size: 1.2rem;
+}
+
+/* Conteúdo das Abas */
+.tab-content {
+    margin-top: 0;
+}
+
+.tab-panel {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sub-navegação */
+.sub-tab-navigation {
+    margin: 2rem 0 1rem 0;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.sub-tab-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.sub-tab-button {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 2px solid var(--border-light);
+    border-radius: 25px;
+    color: var(--unimed-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.sub-tab-button:hover {
+    background: rgba(0, 153, 93, 0.1);
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+
+.sub-tab-button.active {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+}
+
+.sub-tab-content {
+    margin-top: 1rem;
+}
+
+.sub-tab-panel {
+    display: none;
+    animation: slideIn 0.3s ease-in;
+}
+
+.sub-tab-panel.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Tabelas Responsivas */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.table th {
+    background: var(--primary-green);
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table tbody tr:hover {
+    background: rgba(0, 153, 93, 0.05);
+}
+
+.table tbody tr:nth-child(even) {
+    background: rgba(0, 153, 93, 0.02);
+}
+
+/* Melhorias para Mobile - Abas */
+@media (max-width: 768px) {
+    .tab-buttons {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .tab-button {
+        min-width: auto;
+        border-radius: 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .tab-button:first-child {
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .tab-button:last-child {
+        border-radius: 0 0 10px 10px;
+        border-bottom: none;
+    }
+    
+    .sub-tab-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .sub-tab-button {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}

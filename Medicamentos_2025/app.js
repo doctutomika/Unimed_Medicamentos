@@ -13,8 +13,20 @@ const VIA_COLORS = {
     'SC': '#FF9800'
 };
 
+const FINALIDADES_COLORS = [
+    '#00995d', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+    '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE',
+    '#85C1E9'
+];
+
 let dadosAnalise = null;
 let dadosRankings = null;
+let dadosVias = {
+    'VO': null,
+    'IM': null,
+    'IV': null,
+    'SC': null
+};
 
 // Função para carregar dados
 async function carregarDados() {
@@ -27,9 +39,22 @@ async function carregarDados() {
         const responseRankings = await fetch('dados_csv/15+_Princípio_Ativo.csv');
         if (!responseRankings.ok) throw new Error('Erro ao carregar dados de rankings');
         
+        // Carregar dados das vias de administração
+        const responsesVias = await Promise.all([
+            fetch('dados_csv/VOs.csv'),
+            fetch('dados_csv/IMs.csv'),
+            fetch('dados_csv/IVs.csv'),
+            fetch('dados_csv/SCs.csv')
+        ]);
+        
         // Processar dados
         dadosAnalise = await processarCSV(await responseAnalise.text());
         dadosRankings = await processarCSV(await responseRankings.text());
+        
+        dadosVias['VO'] = await processarCSV(await responsesVias[0].text());
+        dadosVias['IM'] = await processarCSV(await responsesVias[1].text());
+        dadosVias['IV'] = await processarCSV(await responsesVias[2].text());
+        dadosVias['SC'] = await processarCSV(await responsesVias[3].text());
         
         inicializarDashboard();
     } catch (error) {
@@ -70,6 +95,7 @@ function mostrarErro(mensagem) {
 
 // Função principal de inicialização
 function inicializarDashboard() {
+    inicializarNavegacaoAbas();
     criarMetricasPrincipais();
     criarGraficoViaAdministracao();
     criarMetricasViaAdministracao();
@@ -84,6 +110,53 @@ function inicializarDashboard() {
     criarGraficoGlosaPorVia();
     criarGraficoTaxaGlosa();
     criarInsightsFabricantes();
+    
+    // Carregar tabelas
+    carregarTabelaAnaliseVia();
+    carregarTabelasVias();
+    carregarTabelaRankingsCompleta();
+}
+
+// Navegação por abas
+function inicializarNavegacaoAbas() {
+    // Abas principais
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            
+            // Remover active de todos os botões e painéis
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Adicionar active ao botão clicado e painel correspondente
+            button.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+    
+    // Sub-abas
+    const subTabButtons = document.querySelectorAll('.sub-tab-button');
+    
+    subTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetSubTab = button.getAttribute('data-sub-tab');
+            const parentTab = button.closest('.tab-panel').id;
+            
+            // Remover active de todos os sub-botões e sub-painéis do mesmo grupo
+            const parentSubButtons = document.querySelectorAll(`#${parentTab} .sub-tab-button`);
+            const parentSubPanels = document.querySelectorAll(`#${parentTab} .sub-tab-panel`);
+            
+            parentSubButtons.forEach(btn => btn.classList.remove('active'));
+            parentSubPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Adicionar active ao sub-botão clicado e sub-painel correspondente
+            button.classList.add('active');
+            document.getElementById(targetSubTab).classList.add('active');
+        });
+    });
 }
 
 // Métricas principais
@@ -411,126 +484,6 @@ function criarGraficoOutliers() {
     Plotly.newPlot('chart-outliers', [trace], layout, {responsive: true});
 }
 
-// Gráfico de valor unitário por via
-function criarGraficoValorUnitario() {
-    const dados = [
-        { via: 'VO', valor: 53.78, desvio: 901.08 },
-        { via: 'IM', valor: 48.17, desvio: 1431.78 },
-        { via: 'IV', valor: 15.38, desvio: 10915.61 },
-        { via: 'SC', valor: 336.13, desvio: 12129.97 }
-    ];
-    
-    const trace = {
-        x: dados.map(d => d.via),
-        y: dados.map(d => d.valor),
-        type: 'bar',
-        marker: {
-            color: dados.map(d => VIA_COLORS[d.via]),
-            line: { color: '#fff', width: 2 }
-        },
-        text: dados.map(d => `R$ ${d.valor.toFixed(2)}<br>Desvio: R$ ${d.desvio.toFixed(2)}`),
-        textposition: 'auto',
-        hovertemplate: '<b>%{x}</b><br>%{text}<extra></extra>'
-    };
-    
-    const layout = {
-        title: {
-            text: 'Valor Unitário Médio por Via de Administração',
-            font: { size: 18, color: '#00995d' }
-        },
-        xaxis: { title: 'Via de Administração' },
-        yaxis: { title: 'Valor Unitário Médio (R$)', tickformat: '$,.2f' },
-        margin: { t: 60, b: 60, l: 80, r: 40 },
-        showlegend: false
-    };
-    
-    Plotly.newPlot('chart-valor-unitario', [trace], layout, {responsive: true});
-}
-
-// Gráfico de glosa por via
-function criarGraficoGlosaPorVia() {
-    const dados = [
-        { via: 'VO', glosa: 256657.68, porcentagem: 1.26 },
-        { via: 'IM', glosa: 203752.81, porcentagem: 1.00 },
-        { via: 'IV', glosa: 25819.15, porcentagem: 0.13 },
-        { via: 'SC', glosa: 6261014.70, porcentagem: 30.67 }
-    ];
-    
-    const trace = {
-        labels: dados.map(d => d.via),
-        values: dados.map(d => d.glosa),
-        type: 'pie',
-        marker: {
-            colors: dados.map(d => VIA_COLORS[d.via]),
-            line: { color: '#fff', width: 2 }
-        },
-        textinfo: 'label+percent',
-        textposition: 'auto',
-        hovertemplate: '<b>%{label}</b><br>Valor: %{text}<br>Porcentagem: %{percent}<extra></extra>'
-    };
-    
-    const layout = {
-        title: {
-            text: 'Distribuição de Glosas por Via',
-            font: { size: 18, color: '#00995d' }
-        },
-        showlegend: true,
-        legend: { orientation: 'v', x: 1.1, y: 0.5 }
-    };
-    
-    Plotly.newPlot('chart-glosa-por-via', [trace], layout, {responsive: true});
-}
-
-// Gráfico de taxa de glosa por via
-function criarGraficoTaxaGlosa() {
-    const dados = [
-        { via: 'VO', taxa: 8.07 },
-        { via: 'IM', taxa: 5.94 },
-        { via: 'IV', taxa: 13.41 },
-        { via: 'SC', taxa: 16.39 }
-    ];
-    
-    const trace = {
-        x: dados.map(d => d.via),
-        y: dados.map(d => d.taxa),
-        type: 'bar',
-        marker: {
-            color: dados.map(d => d.taxa > 15 ? '#F44336' : d.taxa > 10 ? '#FF9800' : '#4CAF50'),
-            line: { color: '#fff', width: 2 }
-        },
-        text: dados.map(d => `${d.taxa.toFixed(2)}%`),
-        textposition: 'auto',
-        hovertemplate: '<b>%{x}</b><br>Taxa de Glosa: %{text}<extra></extra>'
-    };
-    
-    const layout = {
-        title: {
-            text: 'Taxa de Glosa por Via de Administração',
-            font: { size: 18, color: '#00995d' }
-        },
-        xaxis: { title: 'Via de Administração' },
-        yaxis: { title: 'Taxa de Glosa (%)', tickformat: ',.1f' },
-        margin: { t: 60, b: 60, l: 80, r: 40 },
-        showlegend: false
-    };
-    
-    Plotly.newPlot('chart-taxa-glosa', [trace], layout, {responsive: true});
-}
-
-// Funções utilitárias
-function formatarMoeda(valor) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(valor);
-}
-
-function formatarNumero(valor) {
-    return new Intl.NumberFormat('pt-BR').format(valor);
-}
-
 // Gráfico de fabricantes
 function criarGraficoFabricantes() {
     // Dados simulados baseados nos insights do dashboard antigo
@@ -653,12 +606,193 @@ function criarInsightsFabricantes() {
     container.innerHTML = insights;
 }
 
-// Paleta de cores para finalidades
-const FINALIDADES_COLORS = [
-    '#00995d', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-    '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE',
-    '#85C1E9'
-];
+// Gráfico de valor unitário por via
+function criarGraficoValorUnitario() {
+    const dados = [
+        { via: 'VO', valor: 53.78, desvio: 901.08 },
+        { via: 'IM', valor: 48.17, desvio: 1431.78 },
+        { via: 'IV', valor: 15.38, desvio: 10915.61 },
+        { via: 'SC', valor: 336.13, desvio: 12129.97 }
+    ];
+    
+    const trace = {
+        x: dados.map(d => d.via),
+        y: dados.map(d => d.valor),
+        type: 'bar',
+        marker: {
+            color: dados.map(d => VIA_COLORS[d.via]),
+            line: { color: '#fff', width: 2 }
+        },
+        text: dados.map(d => `R$ ${d.valor.toFixed(2)}<br>Desvio: R$ ${d.desvio.toFixed(2)}`),
+        textposition: 'auto',
+        hovertemplate: '<b>%{x}</b><br>%{text}<extra></extra>'
+    };
+    
+    const layout = {
+        title: {
+            text: 'Valor Unitário Médio por Via de Administração',
+            font: { size: 18, color: '#00995d' }
+        },
+        xaxis: { title: 'Via de Administração' },
+        yaxis: { title: 'Valor Unitário Médio (R$)', tickformat: '$,.2f' },
+        margin: { t: 60, b: 60, l: 80, r: 40 },
+        showlegend: false
+    };
+    
+    Plotly.newPlot('chart-valor-unitario', [trace], layout, {responsive: true});
+}
+
+// Gráfico de glosa por via
+function criarGraficoGlosaPorVia() {
+    const dados = [
+        { via: 'VO', glosa: 256657.68, porcentagem: 1.26 },
+        { via: 'IM', glosa: 203752.81, porcentagem: 1.00 },
+        { via: 'IV', glosa: 25819.15, porcentagem: 0.13 },
+        { via: 'SC', glosa: 6261014.70, porcentagem: 30.67 }
+    ];
+    
+    const trace = {
+        labels: dados.map(d => d.via),
+        values: dados.map(d => d.glosa),
+        type: 'pie',
+        marker: {
+            colors: dados.map(d => VIA_COLORS[d.via]),
+            line: { color: '#fff', width: 2 }
+        },
+        textinfo: 'label+percent',
+        textposition: 'auto',
+        hovertemplate: '<b>%{label}</b><br>Valor: %{text}<br>Porcentagem: %{percent}<extra></extra>'
+    };
+    
+    const layout = {
+        title: {
+            text: 'Distribuição de Glosas por Via',
+            font: { size: 18, color: '#00995d' }
+        },
+        showlegend: true,
+        legend: { orientation: 'v', x: 1.1, y: 0.5 }
+    };
+    
+    Plotly.newPlot('chart-glosa-por-via', [trace], layout, {responsive: true});
+}
+
+// Gráfico de taxa de glosa por via
+function criarGraficoTaxaGlosa() {
+    const dados = [
+        { via: 'VO', taxa: 8.07 },
+        { via: 'IM', taxa: 5.94 },
+        { via: 'IV', taxa: 13.41 },
+        { via: 'SC', taxa: 16.39 }
+    ];
+    
+    const trace = {
+        x: dados.map(d => d.via),
+        y: dados.map(d => d.taxa),
+        type: 'bar',
+        marker: {
+            color: dados.map(d => d.taxa > 15 ? '#F44336' : d.taxa > 10 ? '#FF9800' : '#4CAF50'),
+            line: { color: '#fff', width: 2 }
+        },
+        text: dados.map(d => `${d.taxa.toFixed(2)}%`),
+        textposition: 'auto',
+        hovertemplate: '<b>%{x}</b><br>Taxa de Glosa: %{text}<extra></extra>'
+    };
+    
+    const layout = {
+        title: {
+            text: 'Taxa de Glosa por Via de Administração',
+            font: { size: 18, color: '#00995d' }
+        },
+        xaxis: { title: 'Via de Administração' },
+        yaxis: { title: 'Taxa de Glosa (%)', tickformat: ',.1f' },
+        margin: { t: 60, b: 60, l: 80, r: 40 },
+        showlegend: false
+    };
+    
+    Plotly.newPlot('chart-taxa-glosa', [trace], layout, {responsive: true});
+}
+
+// Carregar tabela de análise por via
+function carregarTabelaAnaliseVia() {
+    const tbody = document.querySelector('#tabela-analise-via tbody');
+    
+    const dados = [
+        { via: 'VO', valor: 153692747.11, porcentagem: 17.6, quantidade: 2857896, glosa: 256657.68, taxa: 8.07 },
+        { via: 'IM', valor: 7455223.10, porcentagem: 0.9, quantidade: 154743, glosa: 203752.81, taxa: 5.94 },
+        { via: 'IV', valor: 502227797.08, porcentagem: 57.5, quantidade: 32647285, glosa: 25819.15, taxa: 13.41 },
+        { via: 'SC', valor: 199707844.30, porcentagem: 22.9, quantidade: 594377, glosa: 6261014.70, taxa: 16.39 }
+    ];
+    
+    tbody.innerHTML = dados.map(d => `
+        <tr>
+            <td><strong>${d.via}</strong></td>
+            <td>${formatarMoeda(d.valor)}</td>
+            <td>${d.porcentagem}%</td>
+            <td>${formatarNumero(d.quantidade)}</td>
+            <td>${formatarMoeda(d.glosa)}</td>
+            <td>${d.taxa.toFixed(2)}%</td>
+        </tr>
+    `).join('');
+}
+
+// Carregar tabelas das vias de administração
+function carregarTabelasVias() {
+    Object.keys(dadosVias).forEach(via => {
+        if (dadosVias[via] && dadosVias[via].length > 0) {
+            const tbody = document.querySelector(`#tabela-${via.toLowerCase()} tbody`);
+            if (tbody) {
+                const dados = dadosVias[via].slice(0, 50); // Limitar a 50 registros para performance
+                
+                tbody.innerHTML = dados.map(d => `
+                    <tr>
+                        <td>${d.Produto || d.Nome_Comercial || 'N/A'}</td>
+                        <td>${d.Principio_Ativo || 'N/A'}</td>
+                        <td>${formatarMoeda(parseFloat(d.Valor_Aprovado || 0))}</td>
+                        <td>${formatarNumero(parseInt(d.Quantidade || 0))}</td>
+                        <td>${formatarMoeda(parseFloat(d.Valor_Unitario || 0))}</td>
+                        <td>${formatarMoeda(parseFloat(d.Valor_Glosado || 0))}</td>
+                        <td>${parseFloat(d.Taxa_Glosa || 0).toFixed(2)}%</td>
+                    </tr>
+                `).join('');
+            }
+        }
+    });
+}
+
+// Carregar tabela completa dos rankings
+function carregarTabelaRankingsCompleta() {
+    const tbody = document.querySelector('#tabela-rankings-completa tbody');
+    
+    if (dadosRankings && dadosRankings.length > 0) {
+        const dados = dadosRankings.slice(0, 100); // Limitar a 100 registros
+        
+        tbody.innerHTML = dados.map(d => `
+            <tr>
+                <td><strong>${d.Ranking || 'N/A'}</strong></td>
+                <td>${d.Principio_Ativo || 'N/A'}</td>
+                <td>${formatarMoeda(parseFloat(d.Valor_Aprovado || 0))}</td>
+                <td>${formatarNumero(parseInt(d.Quantidade || 0))}</td>
+                <td>${formatarMoeda(parseFloat(d.Valor_Glosado || 0))}</td>
+                <td>${parseFloat(d.Taxa_Glosa || 0).toFixed(2)}%</td>
+                <td>${formatarMoeda(parseFloat(d.Valor_Unitario || 0))}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+// Funções utilitárias
+function formatarMoeda(valor) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(valor);
+}
+
+function formatarNumero(valor) {
+    return new Intl.NumberFormat('pt-BR').format(valor);
+}
 
 // Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', carregarDados);
