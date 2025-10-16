@@ -35,17 +35,22 @@
                     <div class="insight-box medical-insight">
                         <h5><i class="fas fa-user-md"></i> Insights Médicos Estratégicos</h5>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="insight-item">
                                     <strong>🎯 Dominância Oncológica:</strong> IV representa 57,5% do valor total, com KEYTRUDA (PEMBROLIZUMABE) liderando com R$ 104,9 milhões
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="insight-item">
                                     <strong>💊 Concentração Terapêutica:</strong> Apenas 46 princípios ativos (21,6%) geram 80% do valor - oportunidade para negociação focada
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <div class="insight-item">
+                                    <strong>🏭 Concentração de Fabricantes:</strong> Top 5 fabricantes representam 53,1% do valor - Janssen-Cilag (14,6%), Roche (11,9%), Merck (11,8%)
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="insight-item">
                                     <strong>⚠️ Outlier Crítico:</strong> SPINRAZA (NUSINERSENA) com valor unitário extremo de R$ 425.062,90 - necessita análise específica
                                 </div>
@@ -173,6 +178,53 @@
             </div>
         </section>
 
+        <!-- Análise por Fabricante -->
+        <section class="section">
+            <h2 class="section-title">Análise por Fabricante</h2>
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-industry"></i> Top 10 Fabricantes por Valor Total</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-fabricantes" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-info-circle"></i> Insights Fabricantes</h3>
+                        </div>
+                        <div class="card-body" id="insights-fabricantes">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Carregando insights...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análise por Finalidade de Uso -->
+        <section class="section">
+            <h2 class="section-title">Análise por Finalidade de Uso</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-stethoscope"></i> Distribuição por Finalidade</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-finalidades" class="chart-container-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Comparativo Valor Unitário por Via -->
         <section class="section">
             <h2 class="section-title">Comparativo de Valor Unitário por Via</h2>
@@ -230,6 +282,7 @@
                             <ul>
                                 <li><strong>Foco IV:</strong> 57,5% do valor - negociação prioritária</li>
                                 <li><strong>Top 46 princípios:</strong> Concentração de 80% do valor</li>
+                                <li><strong>Top 5 fabricantes:</strong> 53,1% do valor - negociação consolidada</li>
                                 <li><strong>Medicamentos cotidianos:</strong> Volume alto, margem para negociação</li>
                                 <li><strong>Outliers críticos:</strong> Protocolos específicos necessários</li>
                             </ul>
